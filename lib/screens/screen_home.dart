@@ -1,60 +1,101 @@
 import 'package:flutter/material.dart';
-import 'package:jvak/models/jvak.dart';
-import 'package:jvak/services/api_service.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:jvak/screens/screen_list.dart';
 import 'package:jvak/services/jvak_api_service.dart';
 import '../utils/jvak_theme_data.dart';
 
-class ScreenHome extends StatelessWidget {
-  ScreenHome({super.key});
-  Future<List<JvakModel>> jvakData = JvakApiService().getJvak();
-  Future<List<JvakModel>> testData = ApiService().getTest();
+class ScreenHome extends StatefulWidget {
+  const ScreenHome({super.key});
+
+  @override
+  State<ScreenHome> createState() => _ScreenHomeState();
+}
+
+class _ScreenHomeState extends State<ScreenHome> {
+  final jvakData = JvakApiService();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("JVAK"),
-          backgroundColor: JvakThemeData.loadingBottomBarColor,
-        ),
-        body: Container(
-          decoration: const BoxDecoration(color: Colors.white),
-          child: FutureBuilder(
-            future: jvakData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.separated(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    var musicList = snapshot.data![index];
-                    return Text(
-                        '${musicList.title} | ${musicList.singer} | ${musicList.number}');
-                  },
-                  separatorBuilder: (context, index) => const SizedBox(
-                    height: 20,
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            bottom: TabBar(
+              indicatorColor: JvakThemeData.songTextColor,
+              tabs: [
+                Tab(
+                  icon: Text(
+                    'KY',
+                    style: GoogleFonts.passionOne(
+                        color: JvakThemeData.songTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30),
                   ),
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+                ),
+                Tab(
+                  icon: Text(
+                    'TJ',
+                    style: GoogleFonts.passionOne(
+                        color: JvakThemeData.songTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30),
+                  ),
+                ),
+              ],
+            ),
+            title: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.menu,
+                        color: JvakThemeData.songTextColor,
+                        size: 35,
+                      ),
+                    ),
+                    Text(
+                      "JVAK",
+                      style: GoogleFonts.passionOne(
+                          color: JvakThemeData.logoTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30),
+                    ),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.star_border_outlined,
+                          color: JvakThemeData.songTextColor,
+                          size: 35,
+                        ))
+                  ],
+                ),
+                const Divider(
+                  color: JvakThemeData.backgroundColor,
+                  height: 20,
+                )
+              ],
+            ),
+            backgroundColor: JvakThemeData.appBarBackgroundColor,
+          ),
+          body: TabBarView(
+            children: [
+              ListScreen(
+                jvakData: jvakData.getJvak(scode: 'ky', type: 'all'),
+                scode: 'ky',
+              ),
+              ListScreen(
+                jvakData: jvakData.getJvak(scode: 'tj', type: 'all'),
+                scode: 'tj',
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
-
-/*
-return ListView.separated(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    var musicList = snapshot.data![index];
-                    return Text(musicList.title);
-                  },
-                  separatorBuilder: (context, index) => const SizedBox(
-                    width: 20,
-                  ),
-                );
-*/

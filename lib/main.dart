@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
     print(indexed);
     final List<Widget> layouts = [
       const ScreenLoading(),
-      ScreenHome(),
+      const ScreenHome(),
     ];
     return MaterialApp(
       theme: ThemeData(
