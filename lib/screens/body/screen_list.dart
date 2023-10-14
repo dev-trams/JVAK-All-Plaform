@@ -136,15 +136,18 @@ class _ListScreenState extends State<ListScreen> {
                 )
               ],
               activeBgColors: const [
-                [Colors.transparent],
-                [Colors.transparent]
+                [Colors.white],
+                [Colors.white]
               ],
+              mainBorderColor: Colors.grey,
               activeFgColor: JvakThemeData.songTextColor,
               inactiveBgColor: Colors.transparent,
               inactiveFgColor: JvakThemeData.songTextColor,
+              activeBgColor: const [Colors.white],
               fontSize: 18,
               initialLabelIndex: 0,
               totalSwitches: 2,
+              borderWidth: 0,
               labels: const ['전체차트', '인기차트'],
               radiusStyle: true,
               onToggle: (index) {

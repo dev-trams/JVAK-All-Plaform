@@ -21,10 +21,12 @@ class ToggleSwitch extends StatefulWidget {
   final Color? activeFgColor;
 
   /// Inactive background color
-  final Color? inactiveBgColor;
+  Color? inactiveBgColor = Colors.transparent;
 
   /// Inactive foreground color
   final Color? inactiveFgColor;
+
+  final Color? mainBorderColor;
 
   /// List of labels
   final List<String>? labels;
@@ -119,11 +121,12 @@ class ToggleSwitch extends StatefulWidget {
       this.labels,
       this.borderColor,
       this.borderWidth,
-      this.dividerColor = Colors.white30,
+      this.dividerColor = Colors.transparent,
       this.activeBgColor,
       this.activeFgColor,
       this.inactiveBgColor,
       this.inactiveFgColor,
+      this.mainBorderColor,
       this.onToggle,
       this.cancelToggle,
       this.cornerRadius = 8.0,
@@ -216,250 +219,267 @@ class _ToggleSwitchState extends State<ToggleSwitch>
         widget.borderWidth ?? (widget.borderColor == null ? 0.0 : 3.0);
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.cornerRadius),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: borderColor!.length == 1
-                ? [borderColor![0], borderColor![0]]
-                : borderColor!,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      child: Stack(
+        children: [
+          Center(
+            child: Container(
+              height: 40,
+              width: 355,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey.withOpacity(0.3),
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.transparent,
+              ),
+            ),
           ),
-        ),
-        child: Container(
-          margin: EdgeInsets.all(borderWidth!),
-          decoration: BoxDecoration(
-              color: inactiveBgColor,
-              borderRadius: BorderRadius.circular(widget.cornerRadius)),
-          height: !widget.isVertical ? widget.minHeight + borderWidth! : null,
-          width: widget.isVertical ? widget.minWidth + borderWidth! : null,
-          child: RowToColumn(
-            isVertical: widget.isVertical,
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(totalSwitches * 2 - 1, (index) {
-              /// Active if index matches current
-              final active = index ~/ 2 == widget.initialLabelIndex;
+          Center(
+            child: Container(
+              margin: EdgeInsets.all(borderWidth!),
+              decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(widget.cornerRadius)),
+              height:
+                  !widget.isVertical ? widget.minHeight + borderWidth! : null,
+              width: widget.isVertical ? widget.minWidth + borderWidth! : null,
+              child: RowToColumn(
+                isVertical: widget.isVertical,
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  totalSwitches * 2 - 1,
+                  (index) {
+                    /// Active if index matches current
+                    final active = index ~/ 2 == widget.initialLabelIndex;
 
-              /// Assigns foreground color based on active status.
-              ///
-              /// Sets active foreground color if current index is active.
-              /// Sets inactive foreground color if current index is inactive.
-              final fgColor = active ? activeFgColor : inactiveFgColor;
+                    /// Assigns foreground color based on active status.
+                    ///
+                    /// Sets active foreground color if current index is active.
+                    /// Sets inactive foreground color if current index is inactive.
+                    final fgColor = active ? activeFgColor : inactiveFgColor;
 
-              /// Default background color
-              List<Color>? bgColor = [Colors.transparent];
+                    /// Default background color
+                    List<Color>? bgColor = [Colors.transparent];
 
-              /// Changes background color if current index is active.
-              ///
-              /// Sets same active background color for all items if active background colors list is empty.
-              /// Sets different active background color for current item by matching index if active background colors list is not empty
-              if (active) {
-                bgColor = widget.activeBgColors == null
-                    ? activeBgColor
-                    : (widget.activeBgColors![index ~/ 2] ?? activeBgColor);
-              }
+                    /// Changes background color if current index is active.
+                    ///
+                    /// Sets same active background color for all items if active background colors list is empty.
+                    /// Sets different active background color for current item by matching index if active background colors list is not empty
+                    if (active) {
+                      bgColor = widget.activeBgColors == null
+                          ? activeBgColor
+                          : (widget.activeBgColors![index ~/ 2] ??
+                              activeBgColor);
+                    }
 
-              if (index % 2 == 1) {
-                final activeDivider = active ||
-                    (widget.initialLabelIndex != null &&
-                        index ~/ 2 == widget.initialLabelIndex! - 1);
+                    if (index % 2 == 1) {
+                      final activeDivider = active ||
+                          (widget.initialLabelIndex != null &&
+                              index ~/ 2 == widget.initialLabelIndex! - 1);
 
-                /// Returns item divider
-                return Container(
-                  width: !widget.isVertical ? 1 : double.infinity,
-                  height: widget.isVertical ? 1 : double.infinity,
-                  color:
-                      activeDivider ? Colors.transparent : widget.dividerColor,
-                  margin: widget.isVertical
-                      ? EdgeInsets.symmetric(
-                          horizontal:
-                              activeDivider ? 0.0 : widget.dividerMargin!)
-                      : EdgeInsets.symmetric(
-                          vertical:
-                              activeDivider ? 0.0 : widget.dividerMargin!),
-                );
-              } else {
-                /// Matches corner radius of active switch to that of border
-                BorderRadius? cornerRadius;
-                if (index == 0 && !widget.isVertical) {
-                  /// Checks if text direction is set right-to-left and
-                  /// assigns corner radius accordingly.
-                  cornerRadius = widget.textDirectionRTL
-                      ? BorderRadius.horizontal(
-                          right: Radius.circular(widget.cornerRadius),
-                        )
-                      : BorderRadius.horizontal(
-                          left: Radius.circular(widget.cornerRadius),
+                      /// Returns item divider
+                      return Container(
+                        width: !widget.isVertical ? 1 : double.infinity,
+                        height: widget.isVertical ? 1 : double.infinity,
+                        color: activeDivider
+                            ? Colors.transparent
+                            : Colors.transparent,
+                        margin: widget.isVertical
+                            ? EdgeInsets.symmetric(
+                                horizontal:
+                                    activeDivider ? 0.0 : widget.dividerMargin!)
+                            : EdgeInsets.symmetric(
+                                vertical: activeDivider
+                                    ? 0.0
+                                    : widget.dividerMargin!),
+                      );
+                    } else {
+                      /// Matches corner radius of active switch to that of border
+                      BorderRadius? cornerRadius;
+                      if (index == 0 && !widget.isVertical) {
+                        /// Checks if text direction is set right-to-left and
+                        /// assigns corner radius accordingly.
+                        cornerRadius = widget.textDirectionRTL
+                            ? BorderRadius.horizontal(
+                                right: Radius.circular(widget.cornerRadius),
+                              )
+                            : BorderRadius.horizontal(
+                                left: Radius.circular(widget.cornerRadius),
+                              );
+                      }
+                      if (index == 0 && widget.isVertical) {
+                        cornerRadius = BorderRadius.vertical(
+                          top: Radius.circular(widget.cornerRadius),
                         );
-                }
-                if (index == 0 && widget.isVertical) {
-                  cornerRadius = BorderRadius.vertical(
-                    top: Radius.circular(widget.cornerRadius),
-                  );
-                }
-                if (index ~/ 2 == totalSwitches - 1 && !widget.isVertical) {
-                  /// Checks if text direction is set right-to-left and
-                  /// assigns corner radius accordingly.
-                  cornerRadius = widget.textDirectionRTL
-                      ? BorderRadius.horizontal(
-                          left: Radius.circular(widget.cornerRadius),
-                        )
-                      : BorderRadius.horizontal(
-                          right: Radius.circular(widget.cornerRadius),
+                      }
+                      if (index ~/ 2 == totalSwitches - 1 &&
+                          !widget.isVertical) {
+                        /// Checks if text direction is set right-to-left and
+                        /// assigns corner radius accordingly.
+                        cornerRadius = widget.textDirectionRTL
+                            ? BorderRadius.horizontal(
+                                left: Radius.circular(widget.cornerRadius),
+                              )
+                            : BorderRadius.horizontal(
+                                right: Radius.circular(widget.cornerRadius),
+                              );
+                      }
+                      if (index ~/ 2 == totalSwitches - 1 &&
+                          widget.isVertical) {
+                        cornerRadius = BorderRadius.vertical(
+                          bottom: Radius.circular(widget.cornerRadius),
                         );
-                }
-                if (index ~/ 2 == totalSwitches - 1 && widget.isVertical) {
-                  cornerRadius = BorderRadius.vertical(
-                    bottom: Radius.circular(widget.cornerRadius),
-                  );
-                }
+                      }
 
-                /// Assigns empty widget if icon is null
-                /// Calculates icon's size to prevent overflow
-                var icon = widget.icons != null &&
-                        widget.icons![index ~/ 2] != null
-                    ? Icon(
-                        widget.icons![index ~/ 2],
-                        color: fgColor,
-                        size: widget.isVertical
-                            ? widget.iconSize >
-                                    (_calculateHeight(
-                                            index ~/ 2, totalSwitches) /
-                                        3)
-                                ? (_calculateHeight(
-                                        index ~/ 2, totalSwitches)) /
-                                    3
-                                : widget.iconSize
-                            : widget.iconSize >
-                                    (_calculateWidth(
-                                            index ~/ 2, totalSwitches) /
-                                        3)
-                                ? (_calculateWidth(index ~/ 2, totalSwitches)) /
-                                    3
-                                : widget.iconSize,
-                      )
-                    : Container();
+                      /// Assigns empty widget if icon is null
+                      /// Calculates icon's size to prevent overflow
+                      var icon = widget.icons != null &&
+                              widget.icons![index ~/ 2] != null
+                          ? Icon(
+                              widget.icons![index ~/ 2],
+                              color: fgColor,
+                              size: widget.isVertical
+                                  ? widget.iconSize >
+                                          (_calculateHeight(
+                                                  index ~/ 2, totalSwitches) /
+                                              3)
+                                      ? (_calculateHeight(
+                                              index ~/ 2, totalSwitches)) /
+                                          3
+                                      : widget.iconSize
+                                  : widget.iconSize >
+                                          (_calculateWidth(
+                                                  index ~/ 2, totalSwitches) /
+                                              3)
+                                      ? (_calculateWidth(
+                                              index ~/ 2, totalSwitches)) /
+                                          3
+                                      : widget.iconSize,
+                            )
+                          : Container(
+                              decoration: const BoxDecoration(
+                                  color: Colors.transparent),
+                            );
 
-                /// Assigns custom icon if available.
-                /// Overrides icons passed via icons:
-                if (widget.customIcons != null &&
-                    widget.customIcons![index ~/ 2] != null) {
-                  icon = widget.customIcons![index ~/ 2]!;
-                }
+                      /// Assigns custom icon if available.
+                      /// Overrides icons passed via icons:
+                      if (widget.customIcons != null &&
+                          widget.customIcons![index ~/ 2] != null) {
+                        icon = widget.customIcons![index ~/ 2]!;
+                      }
 
-                /// Assigns custom text styles if available.
-                /// Assigns default text style if custom text style is not available.
-                /// Overrides fontSize, activeFgColor, inactiveFgColor.
-                /// Allow Custom Font Style but still respect activeFgColor and inactiveFgColor
-                /// If only one TextStyle is passed then we assume that we wanna
-                /// apply that TextStyle to all the switches.
-                TextStyle defaultTextStyle = TextStyle(
-                  color: fgColor,
-                  fontSize: widget.fontSize,
-                );
+                      /// Assigns custom text styles if available.
+                      /// Assigns default text style if custom text style is not available.
+                      /// Overrides fontSize, activeFgColor, inactiveFgColor.
+                      /// Allow Custom Font Style but still respect activeFgColor and inactiveFgColor
+                      /// If only one TextStyle is passed then we assume that we wanna
+                      /// apply that TextStyle to all the switches.
+                      TextStyle defaultTextStyle = TextStyle(
+                        color: active ? fgColor : Colors.grey,
+                        fontSize: widget.fontSize,
+                      );
 
-                TextStyle oneIndexStyle() {
-                  if (widget.customTextStyles![0]!.color == null) {
-                    return widget.customTextStyles![0]!.copyWith(
-                      color: fgColor,
-                    );
-                  }
-                  return widget.customTextStyles![0]!;
-                }
+                      TextStyle oneIndexStyle() {
+                        if (widget.customTextStyles![0]!.color == null) {
+                          return widget.customTextStyles![0]!.copyWith(
+                            color: fgColor,
+                          );
+                        }
+                        return widget.customTextStyles![0]!;
+                      }
 
-                TextStyle multiIndexStyle() {
-                  if (widget.customTextStyles![index ~/ 2]!.color == null) {
-                    return widget.customTextStyles![index ~/ 2]!.copyWith(
-                      color: fgColor,
-                    );
-                  }
+                      TextStyle multiIndexStyle() {
+                        if (widget.customTextStyles![index ~/ 2]!.color ==
+                            null) {
+                          return widget.customTextStyles![index ~/ 2]!.copyWith(
+                            color: fgColor,
+                          );
+                        }
 
-                  return widget.customTextStyles![index ~/ 2]!;
-                }
+                        return widget.customTextStyles![index ~/ 2]!;
+                      }
 
-                var textStyle = defaultTextStyle;
-                if (widget.customTextStyles != null) {
-                  textStyle = widget.customTextStyles!.length == 1
-                      ? oneIndexStyle()
-                      : (widget.customTextStyles!.length > index ~/ 2 &&
-                              widget.customTextStyles![index ~/ 2] != null
-                          ? multiIndexStyle()
-                          : defaultTextStyle);
-                }
+                      var textStyle = defaultTextStyle;
+                      if (widget.customTextStyles != null) {
+                        textStyle = widget.customTextStyles!.length == 1
+                            ? oneIndexStyle()
+                            : (widget.customTextStyles!.length > index ~/ 2 &&
+                                    widget.customTextStyles![index ~/ 2] != null
+                                ? multiIndexStyle()
+                                : defaultTextStyle);
+                      }
 
-                /// Assigns active border if available.
-                /// If only one active border is passed then we assume that we wanna
-                /// apply that active border to all the switches.
-                Border? activeBorder;
-                if (widget.activeBorders != null) {
-                  activeBorder = widget.activeBorders!.length == 1
-                      ? widget.activeBorders![0]
-                      : (widget.activeBorders!.length > index ~/ 2 &&
-                              widget.activeBorders![index ~/ 2] != null
-                          ? widget.activeBorders![index ~/ 2]!
-                          : null);
-                }
+                      /// Assigns active border if available.
+                      /// If only one active border is passed then we assume that we wanna
+                      /// apply that active border to all the switches.
+                      Border? activeBorder;
+                      if (widget.activeBorders != null) {
+                        activeBorder = widget.activeBorders!.length == 1
+                            ? widget.activeBorders![0]
+                            : (widget.activeBorders!.length > index ~/ 2 &&
+                                    widget.activeBorders![index ~/ 2] != null
+                                ? widget.activeBorders![index ~/ 2]!
+                                : null);
+                      }
+                      bool i = true;
 
-                /// Returns switch item
-                return GestureDetector(
-                  onTap: () => _handleOnTap(index ~/ 2),
-                  child: AnimatedContainer(
-                    padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                    constraints: BoxConstraints(
-                      maxWidth: widget.isVertical
-                          ? const BoxConstraints().maxWidth
-                          : _calculateWidth(index ~/ 2, totalSwitches),
-                      maxHeight: widget.isVertical
-                          ? _calculateHeight(index ~/ 2, totalSwitches)
-                          : const BoxConstraints().maxHeight,
-                    ),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      border: active ? activeBorder : null,
-                      borderRadius: widget.radiusStyle
-                          ? BorderRadius.all(
-                              Radius.circular(widget.cornerRadius))
-                          : cornerRadius,
-                      gradient: LinearGradient(
-                        colors: bgColor!.length == 1
-                            ? [bgColor[0], bgColor[0]]
-                            : bgColor,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    duration: Duration(
-                        milliseconds:
-                            widget.animate ? widget.animationDuration : 0),
-                    curve: widget.curve,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        icon,
-                        Flexible(
-                          child: Container(
-                            padding: EdgeInsets.only(
-                                left: (icon is Container) ? 0.0 : 5.0),
-                            child: Text(
-                              widget.labels?[index ~/ 2] ?? '',
-                              textAlign:
-                                  (widget.centerText) ? TextAlign.center : null,
-                              style: textStyle,
-                              overflow: (!widget.multiLineText)
-                                  ? TextOverflow.ellipsis
-                                  : null,
-                            ),
+                      /// Returns switch item
+                      return GestureDetector(
+                        onTap: () => _handleOnTap(index ~/ 2),
+                        child: AnimatedContainer(
+                          constraints: BoxConstraints(
+                            maxWidth: i
+                                ? 178
+                                : _calculateWidth(index ~/ 2, totalSwitches),
+                            maxHeight: widget.isVertical
+                                ? _calculateHeight(index ~/ 2, totalSwitches)
+                                : const BoxConstraints().maxHeight,
+                          ),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              border: active ? activeBorder : null,
+                              borderRadius: widget.radiusStyle
+                                  ? BorderRadius.all(
+                                      Radius.circular(widget.cornerRadius))
+                                  : cornerRadius),
+                          duration: Duration(
+                              milliseconds: widget.animate
+                                  ? widget.animationDuration
+                                  : 0),
+                          curve: widget.curve,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              icon,
+                              Flexible(
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: (icon is Container) ? 0.0 : 5.0,
+                                      top: 5),
+                                  child: Text(
+                                    widget.labels?[index ~/ 2] ?? '',
+                                    textAlign: (widget.centerText)
+                                        ? TextAlign.center
+                                        : null,
+                                    style: textStyle,
+                                    overflow: (!widget.multiLineText)
+                                        ? TextOverflow.ellipsis
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-            }),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

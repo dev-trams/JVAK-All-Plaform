@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:jvak/screens/screen_home.dart';
+import 'package:jvak/screens/body/screen_home.dart';
+import 'package:jvak/screens/body/screen_setting_core.dart';
 import 'package:jvak/screens/screen_loading.dart';
 
 void main() {
@@ -31,12 +32,12 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(indexed);
     final List<Widget> layouts = [
       const ScreenLoading(),
       const ScreenHome(),
     ];
     return MaterialApp(
+      title: 'JVAK',
       theme: ThemeData(
         primaryColor: const Color(0xFFFFD9D9),
         colorScheme: ColorScheme.fromSwatch(),

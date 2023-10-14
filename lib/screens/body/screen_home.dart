@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jvak/screens/screen_list.dart';
+import 'package:jvak/screens/body/screen_list.dart';
+import 'package:jvak/screens/body/screen_setting_core.dart';
+import 'package:jvak/screens/bookmarks/screen_bookmark.dart';
 import 'package:jvak/services/jvak_api_service.dart';
-import '../utils/jvak_theme_data.dart';
+import '../../utils/jvak_theme_data.dart';
 
 class ScreenHome extends StatefulWidget {
   const ScreenHome({super.key});
@@ -23,24 +25,22 @@ class _ScreenHomeState extends State<ScreenHome> {
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             bottom: TabBar(
+              unselectedLabelColor: Colors.grey,
               indicatorColor: JvakThemeData.songTextColor,
+              labelColor: JvakThemeData.songTextColor,
               tabs: [
                 Tab(
                   icon: Text(
                     'KY',
                     style: GoogleFonts.passionOne(
-                        color: JvakThemeData.songTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30),
+                        fontWeight: FontWeight.bold, fontSize: 30),
                   ),
                 ),
                 Tab(
                   icon: Text(
                     'TJ',
                     style: GoogleFonts.passionOne(
-                        color: JvakThemeData.songTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30),
+                        fontWeight: FontWeight.bold, fontSize: 30),
                   ),
                 ),
               ],
@@ -51,7 +51,14 @@ class _ScreenHomeState extends State<ScreenHome> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingCoreScreen(),
+                          ),
+                        );
+                      },
                       icon: const Icon(
                         Icons.menu,
                         color: JvakThemeData.songTextColor,
@@ -61,23 +68,32 @@ class _ScreenHomeState extends State<ScreenHome> {
                     Text(
                       "JVAK",
                       style: GoogleFonts.passionOne(
-                          color: JvakThemeData.logoTextColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30),
+                        color: JvakThemeData.logoTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
                     ),
                     IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.star_border_outlined,
-                          color: JvakThemeData.songTextColor,
-                          size: 35,
-                        ))
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => const BookMarkScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.star_border_outlined,
+                        color: JvakThemeData.songTextColor,
+                        size: 35,
+                      ),
+                    ),
                   ],
                 ),
                 const Divider(
                   color: JvakThemeData.backgroundColor,
                   height: 20,
-                )
+                ),
               ],
             ),
             backgroundColor: JvakThemeData.appBarBackgroundColor,
